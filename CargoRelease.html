@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Order - Export</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            padding: 20px;
+        }
+
+        form {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Use full width of the container */
+            max-width: 1200px; /* Maximum width */
+            margin: 0 auto; /* Centering the form */
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="date"] {
+            width: calc(50% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #0460FA;
+            border-radius: 5px;
+            box-sizing: border-box;
+            max-width: 300px; /* Limiting form width for better aesthetics */          
+            margin: auto; /* Centering the form on the page */
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="email"]:focus,
+        input[type="date"]:focus {
+            border-color: #0340c2;
+        }
+
+        button {
+            background-color: #0460FA;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0340c2;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+        }
+
+        #tableRows {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f4f4f4; /* Light grey background for visibility */
+            border-radius: 8px;
+        }
+
+        .tableRow {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* Divide the row into 5 equal columns */
+            gap: 10px; /* Space between grid items */
+            align-items: end;
+            margin-bottom: 15px; /* Space between each row */
+        }
+
+        .tableRow label {
+            font-size: 0.8em;
+            color: #666;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+
+        .tableRow input, .tableRow button {
+            width: 100%; /* Full width of grid column */
+            padding: 8px;
+            border: 1px solid #0460FA;
+            border-radius: 4px;
+        }
+
+        .remove-button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .remove-button:hover {
+            background-color: #ff2121;
+        }
+
+        button[type="submit"], button[type="button"] {
+            width: auto;
+            padding: 10px 20px;
+            margin-top: 20px; /* Additional spacing from the last row */
+            grid-column: span 5; /* Span across all columns for full width */
+        }
+        .form-group {
+            display: grid;
+            grid-template-columns: 1fr 3fr; /* Allocation of space between label and field */
+            gap: 10px; /* Space between label and field */
+            margin-bottom: 15px; /* Space between each form group */
+        }    
+
+        
+        img {
+            margin-left: 150px;
+            float: right;
+            max-width: 150px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+        }
+        .box {
+            width: 350px;
+        }
+        .address {
+            float: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            word-wrap: break-word;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        td, tr {
+            overflow: hidden;
+            width: fixed;
+            vertical-align: top;
+            overflow: hidden; /* Hides any content that overflows the cell's box */
+            text-overflow: ellipsis; /* Render ellipses (...) to represent clipped text */
+            white-space: nowrap; /* Prevents text from wrapping */
+            max-width: 20%; /* Sets a maximum width for each cell */
+        }
+        .wrap-text {
+            white-space: normal; /* Allows text to wrap */
+            word-wrap: break-word; /* Ensures words are broken properly */
+        }
+        
+    </style>
+</head>
+<body>
+    <form id="pdfForm">
+        <div class="form-group">
+            Issuing Carrier's Agent Name: <input type="text" name="carrier_agent_name" id="carrier_agent_name" maxlength="50">
+            Issuing Carrier's Agent Address: <input type="text" name="carrier_agent_name" id="carrier_agent_address" maxlength="50">
+            Issuing Carrier's Agent Contact: <input type="text" name="carrier_agent_contact" id="carrier_agent_contact" maxlength="15">
+            Issuing Carrier's Agent Phone: <input type="number" name="carrier_agent_phone" id="carrier_agent_phone" maxlength="15">
+            Issuing Carrier's Agent Fax: <input type="number" name="carrier_agent_fax" id="carrier_agent_fax" maxlength="15">
+        </div>
+        <br><br>
+        <div class="form-group">
+            Trucking Company: <input type="text" name="truckComp" id="truckComp" maxlength="10">
+            Trucking Company Phone: <input type="text" name="truckComp_phone" id="truckComp_phone" maxlength="25">
+            Release From Address: <input type="text" name="relFrom_address" id="relFrom_address" maxlength="10">
+            Release From : <input type="text" name="relFrom" id="relFrom" maxlength="10">
+            Release To Address: <input type="text" name="relTo_address" id="relTo_address" maxlength="10">
+            Release To : <input type="text" name="relTo" id="relTo" maxlength="10">
+        </div>
+        <br><br>
+        <div class="form-group">
+            Master Bill Of: <input type="text" name="master_number" id="master_number" maxlength="50">
+            House Bill Of Landing: <input type="text" name="house_number" id="house_number" maxlength="50">
+            AMS Bill of Landing: <input type="text" name="AMS_bill" id="AMS_bill">
+            Sub-House Bill of Landing:<input type="text" name="Sub_house_bill" id="Sub_house_bill">
+            Type of Move: <input type="text" name="typeMov" id="typeMov">
+        </div>
+        <br><br>
+        <div class="form-group">
+            Customer Reference: <input type="text" name="customerRef" id="customerRef">
+            Place of Delivery by On-Carrier: <input type="text" name="pdoc" id="pdoc">
+            Pre-Carreage by: <input type="text" name="PreCarrBy" id="PreCarrBy">
+            Place of Receipt: <input type="text" name="PlaceOfRec" id="PlaceOfRec">
+            IT Number:<input type="text" name="IT_number" id="IT_number">
+            Vessel/Voyage:<input type="text" name="ves_voy" id="ves_voy">
+        </div>
+        <br><br>
+        <div class="form-group">
+            Port of Landing:<input type="text" name="polan" id="polan">
+            Port of Unlanding:<input type="text" name="poUlan" id="poUlan">
+            Port of Discharge:<input type="text" name="podis" id="podis">
+            Arrival Date:<input type="text" name="arrDate" id="arrDate">
+            Port of Destination: <input type="text" name="pod" id="pod">
+        </div>
+        <br><br>
+        <div class="form-group">
+            Cargo Location / FIRMS: <input type="text" name="cargoLoc" id="cargoLoc">
+        </div>
+        <br><br>
+        
+        <div id="tableRows">
+            <div class="tableRow">
+                <div>
+                    <label for="marks_and_numbers[]">Marks and Numbers:</label>
+                    <input type="text" name="marks_and_numbers[]" class="marks_and_numbers">
+                </div>
+                <div>
+                    <label for="pieces[]">Pieces:</label>
+                    <input type="number" name="pieces[]" class="pieces">
+                </div>
+                <div>
+                    <label for="description[]">Description:</label>
+                    <input type="text" name="description[]" class="description">
+                </div>
+                <div>
+                    <label for="weight[]">Weight:</label>
+                    <input type="number" name="weight[]" class="weight">
+                </div>
+                <div>
+                    <label for="vol_weight[]">Vol Weight/Chargeable Weight:</label>
+                    <input type="number" name="vol_weight[]" class="vol_weight">
+                </div>
+                <button class="remove-button" type="button" onclick="removeRow(this)">Remove</button>
+            </div>
+        </div>
+        <button type="button" onclick="addRow()">Add Row</button><br><br>
+        <button type="submit">Generate Preview</button>
+    </form>
+<br><br><br>
+
+    <div id="preview"></div>
+    
+    <script>
+        function addRow() {
+            var container = document.getElementById('tableRows');
+            var row = document.createElement('div');
+            row.className = 'tableRow';
+            row.innerHTML = `
+            
+                    <div>
+                        <label for="marks_and_numbers[]">Marks and Numbers:</label>
+                        <input type="text" name="marks_and_numbers[]" class="marks_and_numbers">
+                    </div>
+                    <div>
+                        <label for="pieces[]">Pieces:</label>
+                        <input type="number" name="pieces[]" class="pieces">
+                    </div>
+                    <div>
+                        <label for="description[]">Description:</label>
+                        <input type="text" name="description[]" class="description">
+                    </div>
+                    <div>
+                        <label for="weight[]">Weight:</label>
+                        <input type="number" name="weight[]" class="weight">
+                    </div>
+                    <div>
+                        <label for="vol_weight[]">Vol Weight/Chargeable Weight:</label>
+                        <input type="number" name="vol_weight[]" class="vol_weight">
+                    </div>
+                    <button class="remove-button" type="button" onclick="removeRow(this)">Remove</button>
+                
+            `;
+            container.appendChild(row);
+        }
+
+        function removeRow(button) {
+            var row = button.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        
+        document.getElementById('pdfForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting via the browser
+            var carrier_agent_name = document.getElementById('carrier_agent_name').value;
+            var carrier_agent_address = document.getElementById('carrier_agent_address').value;
+            var carrier_agent_contact = document.getElementById('carrier_agent_contact').value;
+            var carrier_agent_phone = document.getElementById('carrier_agent_phone').value;
+            var carrier_agent_fax = document.getElementById('carrier_agent_fax').value;
+            var previewDiv = document.getElementById('preview'); 
+            var relFrom= document.getElementById('relFrom').value;
+            var relFrom_address= document.getElementById('relFrom_address').value;
+            var relTo= document.getElementById('relTo').value;
+            var relTo_address= document.getElementById('relTo_address').value;
+            var truckComp= document.getElementById('truckComp').value;
+            var truckComp_phone= document.getElementById('truckComp_phone').value;
+            var PreCarrBy= document.getElementById('PreCarrBy').value;
+            var PlaceOfRec= document.getElementById('PlaceOfRec').value;
+            var master_bill= document.getElementById('master_number').value;
+            var house_bill= document.getElementById('house_number').value;
+            var AMS_bill= document.getElementById('AMS_bill').value;
+            var Sub_house_bill= document.getElementById('Sub_house_bill').value;
+            var typeMov= document.getElementById('typeMov').value;
+            var customerRef= document.getElementById('customerRef').value;
+            var pdoc= document.getElementById('pdoc').value;
+            var ves_voy= document.getElementById('ves_voy').value;
+            var polan= document.getElementById('polan').value;
+            var poUlan= document.getElementById('poUlan').value;
+            var pod= document.getElementById('pod').value;
+            var podis= document.getElementById('podis').value;
+            var IT_number= document.getElementById('IT_number').value;
+            var arrDate= document.getElementById('arrDate').value;
+            var cargoLoc= document.getElementById('cargoLoc').value;
+            
+
+
+
+            var rows = document.getElementsByClassName('tableRow');
+            var tableHTML = '<table style ="border: 2px solid black;text-align: left;"><tr><th style = "background-color: #f0f0f0;">Marks and Numbers</th><th style = "background-color: #f0f0f0;">Pieces</th><th style = "background-color: #f0f0f0;">Description</th><th style = "background-color: #f0f0f0;">Weight</th><th style = "background-color: #f0f0f0;">Vol Wgt/Chrg Wgt</th></tr>';
+                
+                
+                var totalSumWeight = 0;
+                var totalSumVolWeight = 0;
+                var totalPieces = 0;
+                var totalWeight = 0;
+                var totalVolWeight = 0;
+            Array.from(rows).forEach(function(row) {
+                var marks = row.querySelector('.marks_and_numbers').value;
+                var pieces = parseFloat(row.querySelector('.pieces').value) || 0;
+                var description = row.querySelector('.description').value;
+                var weight = parseFloat(row.querySelector('.weight').value) || 0;
+                var volWeight = parseFloat(row.querySelector('.vol_weight').value) || 0;
+                
+                totalPieces += pieces;
+                totalSumWeight += weight;
+                totalSumVolWeight += volWeight;
+                totalWeight = totalSumWeight*totalPieces
+                totalVolWeight = totalSumVolWeight*totalPieces
+                
+                tableHTML += `<tr>
+                    <td class="wrap-text" style ="border: 2px solid black;">${marks}</td>
+                    <td class="wrap-text" style ="border: 2px solid black;">${pieces}</td>
+                    <td class="wrap-text" style ="border: 2px solid black;">${description}</td>
+                    <td class="wrap-text" style ="border: 2px solid black;">${weight}</td>
+                    <td class="wrap-text" style ="border: 2px solid black;">${volWeight}</td>
+                </tr>`;
+            });
+            
+            tableHTML += '</table>';
+
+            previewDiv.innerHTML = `
+            <!DOCTYPE html>
+<html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+               
+                <style>
+                    table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    word-wrap: break-word;
+                    border-collapse: collapse;
+                    table-layout: fixed;
+                    }
+                    td, tr {
+                        overflow: hidden;
+                        width: fixed;
+                        vertical-align: top;
+                        overflow: hidden; /* Hides any content that overflows the cell's box */
+                        text-overflow: ellipsis; /* Render ellipses (...) to represent clipped text */
+                        white-space: nowrap; /* Prevents text from wrapping */
+                        max-width: 150px; /* Sets a maximum width for each cell */
+                    }
+                    .wrap-text {
+                        white-space: normal; /* Allows text to wrap */
+                        word-wrap: break-word; /* Ensures words are broken properly */
+                    }
+                    img{
+                        max-width: 200px;
+                    }
+                    .full-width {
+                        width: 100% !important;
+
+                    }
+                    /* Top section with three horizontal divs */
+                    .top {
+                        display: flex;
+                        font-size: 12px;
+                    }
+                    .top > div {
+                        flex: 1; /* Divide space equally among the divs */
+                    }
+                    
+                    .middle, .middle2, .bottom {
+                        margin-top: 10px;
+                        display: flex;
+                    }
+                    .center{
+                        position: relative;
+                        left: 300px;
+                    }
+                    .container {
+                        display: flex;
+                        justify-content: center; /* centers horizontally */
+                        align-items: center; /* centers vertically if you want full centering */
+                        
+                    }
+                    .PDFborder{
+                        border: 2px solid black;
+                        width: 900px;
+                        height: auto;
+                        padding: 20px;
+                        font-family: sans-serif;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    }
+                    .footer{
+                        vertical-align: top;
+                        display: inline-block;
+                        font-size: 13px;
+                        position: relative;
+                        bottom: 50px;
+                        color: gray;
+                    }
+                    .margin{
+                        position: relative;
+                        left: 500px;
+                    }
+                </style>
+            </head>
+            <body>
+            <div class="container">
+                <div class="PDFborder">
+                        <div class="top">
+                            <div class="full-width">
+                                <img style="position: relative;right: 10px;" src="images/xpdLogo.png" alt="XPD Logo">
+                            </div>
+                            <div style="padding-top: 50px;position: relative;left: 100px; text-align: center;" class="full-width">
+                                ${carrier_agent_name}<br>carrier_agent_address<br><br>Phone: ${carrier_agent_phone}
+                            </div>
+                            <div class=" full-width"><strong style="font-size: 20px; position: relative;left: 200px;top: 50px;"> RELEASE ORDER / CARGO RELEASE</strong></div>
+                            <div class="full-width">
+                                
+                            </div>
+                        </div>
+                        <hr>
+
+                        <table style="display: grid-row;">
+                            <tr>
+                                <td class="wrap-text">
+                                    Trucking Company:<br>${truckComp} 
+                                    <p><strong>Tel. ${truckComp_phone}</strong></p>            
+                                            
+                                </td>
+                                
+                                <td class="wrap-text">Release From:<br>${relFrom}
+                                        <br>${relFrom_address}</td>
+                                <td class="wrap-text">Release To: <br>${relTo}
+                                                                  <br>${relTo_address}</td>
+                                    
+                            </tr>
+                            
+                            <tr>
+                                <td class="wrap-text">
+                                    <p>Master Bill of:<strong><br>${master_bill} </strong></p>
+                                    <p>House Bill of Landing: <strong><br>${house_bill}</strong></p>
+                                    <p>AMS Bill of Landing: <strong><br>${AMS_bill}</strong></p>
+                                    <p>Sub-House Bill of Landing: <strong><br>${Sub_house_bill}</strong></p>
+                                    <p>Type of Move: <strong><br>${typeMov}</strong></p>
+                                    
+                                </td>
+                                <td class="wrap-text">
+                                    <p>Customer Reference:<strong><br>${customerRef} </strong></p>
+                                    <p>Place of Delivery by On-Carrier:<strong><br>${pdoc} </strong></p>
+                                    <p>Pre-Carreage by:<strong><br>${PreCarrBy} </strong></p>
+                                    <p>Place of Receipt:<strong><br>${PlaceOfRec} </strong></p>
+                                    <p>IT Number:<strong><br>${IT_number}</strong></p>
+                                    <p>Vessel/Voyage:<br><strong>${ves_voy} </strong></p>
+                                </td>
+                                <td class="wrap-text">
+                                    <p>Port of Landing:<br><strong>${polan} </strong></p>
+                                    <p>Port of Unlanding:<br><strong>${poUlan} </strong></p>
+                                    <p>Port of Discharge:<strong><br>${podis} </strong></p>
+                                    <p>Arrival Date:<strong><br>${arrDate}</strong></p>
+                                    <p>Port of Destination:<strong><br>${pod} </strong></p>
+                                </td>
+                                
+                            </tr>
+                        </table>
+
+                        
+                            <table>
+                                <tr>       
+                                    ${tableHTML}
+                                </tr>
+                            </table>
+                            
+                     
+                        <hr>
+                        <div class="bottom full-width">
+                            <div class="full-width">
+                                <strong style="font-size: 20px;">TOTALS:</strong>
+                            </div>
+                            <div class="full-width">
+                                
+                            </div>
+                            <div class="full-width">
+                                
+                            </div>
+                            <div class="totals full-width">
+                                <div>Total Pieces: ${totalPieces}</div>
+                                <div>Total Weight: ${totalWeight}</div>
+                                <div>Total Vol Weight: ${totalVolWeight}</div>
+                            </div>
+                        </div>
+
+                        <hr>
+                            <div>
+                                    <div class="footer">
+                                        <p style="position: relative; top:40px;">Cargo Location / FORMIS: <br>${cargoLoc}</p>     
+                                    </div>
+                                    <div style="position: relative; left: 300px;" class="footer">
+                                        <p style="position: relative; top:40px;">Notes:</p>     
+                                    </div>
+                            
+
+                        </div>
+                            
+                </div>
+            </div>
+            </body>
+            </html>
+                          `;
+        });
+    </script>
+</body>
+</html>
